@@ -1,0 +1,18 @@
+[Global]
+IconName=kwazzup
+Comment=KWazzup
+
+[Event/NewMessage]
+Name=New Message
+Comment=A new WhatsApp message has arrived
+Action=Popup|Sound
+Sound=message-new-instant
+IconName=kwazzup
+Urgency=Normal
+
+[Event/NewMessageSilent]
+Name=New Message (silent)
+Comment=A new WhatsApp message has arrived (no sound)
+Action=Popup
+IconName=kwazzup
+Urgency=Normal

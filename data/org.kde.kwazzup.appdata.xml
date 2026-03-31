@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.kde.kwazzup</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>KWazzup</name>
+  <summary>An unofficial WhatsApp client for KDE Plasma</summary>
+  <description>
+    <p>
+      KWazzup is an unofficial, community-maintained KDE Plasma client for
+      WhatsApp Web. It wraps WhatsApp Web inside a Qt WebEngine view and
+      integrates deeply with the KDE ecosystem.
+    </p>
+    <p>
+      KWazzup is not affiliated with or endorsed by WhatsApp LLC or Meta
+      Platforms, Inc. WhatsApp is a trademark of WhatsApp LLC.
+    </p>
+    <ul>
+      <li>Native KDE notifications with sound via KNotification</li>
+      <li>Plasma system tray with unread badge (KStatusNotifierItem)</li>
+      <li>Global keyboard shortcuts via KGlobalAccel (Meta+W)</li>
+      <li>Automatic light/dark theme switching following the system colour scheme</li>
+      <li>Application lock with optional KWallet integration</li>
+      <li>Spell checking powered by Sonnet</li>
+      <li>Single-instance D-Bus service (KDBusService)</li>
+      <li>Persistent session — stay logged in across restarts</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">org.kde.kwazzup.desktop</launchable>
+  <url type="homepage">https://github.com/thanek/kwazzup</url>
+  <url type="bugtracker">https://github.com/thanek/kwazzup/issues</url>
+  <provides>
+    <binary>kwazzup</binary>
+  </provides>
+  <releases>
+    <release version="1.0.0" date="2026-03-31">
+      <description><p>Initial public release.</p></description>
+    </release>
+  </releases>
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">intense</content_attribute>
+  </content_rating>
+</component>

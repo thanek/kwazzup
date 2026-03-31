@@ -1,0 +1,20 @@
+[Desktop Entry]
+Name=KWazzup
+Name[pl]=KWazzup
+GenericName=WhatsApp Client
+GenericName[pl]=Klient WhatsApp
+Comment=An unofficial WhatsApp client for KDE Plasma
+Comment[pl]=Nieoficjalny klient WhatsApp dla KDE Plasma
+Exec=kwazzup %u
+Icon=kwazzup
+Terminal=false
+Type=Application
+Categories=Network;InstantMessaging;Qt;KDE;
+Keywords=WhatsApp;Chat;Messenger;Messaging;
+StartupNotify=true
+StartupWMClass=kwazzup
+MimeType=x-scheme-handler/whatsapp;
+
+# D-Bus single-instance activation
+DBusActivatable=true
+X-DBus-ServiceName=org.kde.kwazzup

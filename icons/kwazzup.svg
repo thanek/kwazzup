@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- KWhatsApp application icon — WhatsApp-like speech bubble on KDE green -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Outer circle (WhatsApp green) -->
+  <circle cx="24" cy="24" r="22" fill="#25D366"/>
+
+  <!-- Speech-bubble body (white) -->
+  <path d="
+    M 24 10
+    C 15.163 10 8 16.716 8 25
+    C 8 28.37 9.14 31.476 11.07 33.967
+    L 8.5 40
+    L 15.3 37.594
+    C 17.864 38.985 20.836 39.8 24 39.8
+    C 32.837 39.8 40 33.084 40 24.8
+    C 40 16.516 32.837 10 24 10 Z"
+    fill="white"/>
+
+  <!-- Phone handset icon (green) — WhatsApp's signature icon -->
+  <path d="
+    M 19.2 17.6
+    C 19.6 18.8 20.4 20 21.6 21.2
+    C 22.8 22.4 24 23.2 25.2 23.6
+    L 26.4 22.4
+    C 26.8 22 27.4 21.9 27.9 22.1
+    C 29.1 22.6 30.4 22.9 31.8 22.9
+    C 32.5 22.9 33 23.4 33 24.1
+    L 33 27.4
+    C 33 28.1 32.5 28.6 31.8 28.6
+    C 20.9 28.6 17 18.4 17 16.2
+    C 17 15.5 17.5 15 18.2 15
+    L 21.5 15
+    C 22.2 15 22.7 15.5 22.7 16.2
+    C 22.7 17.6 23 18.9 23.5 20.1
+    C 23.7 20.6 23.6 21.2 23.2 21.6 Z"
+    fill="#25D366"/>
+</svg>

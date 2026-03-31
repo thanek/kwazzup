@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Icon stored under the hicolor structure so QIcon::fromTheme finds it
+             when ":/\" is added to QIcon::fallbackSearchPaths() -->
+        <file alias="icons/hicolor/scalable/apps/kwazzup.svg">icons/kwazzup.svg</file>
+    </qresource>
+</RCC>

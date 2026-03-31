@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+
+  <kcfgfile name="kwazzuprc"/>
+
+  <group name="MainWindow">
+    <entry name="CloseToTray" type="Bool">
+      <label>Minimize to tray on close</label>
+      <default>true</default>
+    </entry>
+    <entry name="StartMinimized" type="Bool">
+      <label>Start minimized to tray</label>
+      <default>false</default>
+    </entry>
+    <entry name="AutoStart" type="Bool">
+      <label>Launch at login</label>
+      <default>false</default>
+    </entry>
+    <entry name="ZoomFactor" type="Int">
+      <label>Zoom factor (percent)</label>
+      <default>100</default>
+      <min>50</min>
+      <max>200</max>
+    </entry>
+    <entry name="SpellCheckLanguage" type="String">
+      <label>Spell-check language code</label>
+      <default></default>
+    </entry>
+    <entry name="UserAgent" type="String">
+      <label>Custom HTTP User-Agent (leave empty for default)</label>
+      <default></default>
+    </entry>
+  </group>
+
+  <group name="Notifications">
+    <entry name="EnableNotifications" type="Bool">
+      <label>Enable notifications</label>
+      <default>true</default>
+    </entry>
+    <entry name="NotificationSound" type="Bool">
+      <label>Play notification sound</label>
+      <default>true</default>
+    </entry>
+    <entry name="DoNotDisturb" type="Bool">
+      <label>Do Not Disturb</label>
+      <default>false</default>
+    </entry>
+  </group>
+
+  <group name="Privacy">
+    <entry name="PrivateBrowsing" type="Bool">
+      <label>Off-the-Record / private browsing</label>
+      <default>false</default>
+    </entry>
+  </group>
+
+  <group name="Lock">
+    <entry name="AppLockEnabled" type="Bool">
+      <label>Enable application lock</label>
+      <default>false</default>
+    </entry>
+    <entry name="AutoLockMinutes" type="Int">
+      <label>Auto-lock after N minutes of inactivity (0 = disabled)</label>
+      <default>0</default>
+      <min>0</min>
+      <max>120</max>
+    </entry>
+  </group>
+
+</kcfg>
