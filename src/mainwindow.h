@@ -18,7 +18,7 @@ class QSlider;
  * MainWindow
  *
  * The application's primary window — a KXmlGuiWindow loaded from
- * data/kwhatsappui.rc.  It embeds a QWebEngineView that renders
+ * data/kwazzupui.rc.  It embeds a QWebEngineView that renders
  * WhatsApp Web and orchestrates all other subsystems:
  *
  *   - TrayManager    (KStatusNotifierItem)

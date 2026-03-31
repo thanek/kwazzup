@@ -50,7 +50,7 @@ LockWidget::LockWidget(QWidget *parent)
     // App icon
     m_iconLabel = new QLabel(card);
     m_iconLabel->setAlignment(Qt::AlignCenter);
-    m_iconLabel->setPixmap(QIcon::fromTheme(QStringLiteral("kwhatsapp")).pixmap(64, 64));
+    m_iconLabel->setPixmap(QIcon::fromTheme(QStringLiteral("kwazzup")).pixmap(64, 64));
     col->addWidget(m_iconLabel);
 
     // Title

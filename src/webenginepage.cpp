@@ -27,7 +27,7 @@ static const char s_bridgeSetupJs[] = R"JS(
         // ── Notification API override ──────────────────────────────────────
         var OrigNotification = window.Notification;
 
-        function KWhatsAppNotification(title, options) {
+        function KWazzupNotification(title, options) {
             options = options || {};
             var body    = options.body  || "";
             var icon    = options.icon  || "";
@@ -41,18 +41,18 @@ static const char s_bridgeSetupJs[] = R"JS(
             this.dispatchEvent = function() { return true; };
         }
 
-        Object.defineProperty(KWhatsAppNotification, "permission", {
+        Object.defineProperty(KWazzupNotification, "permission", {
             get: function() { return "granted"; },
             configurable: true
         });
 
-        KWhatsAppNotification.requestPermission = function(callback) {
+        KWazzupNotification.requestPermission = function(callback) {
             var result = Promise.resolve("granted");
             if (typeof callback === "function") callback("granted");
             return result;
         };
 
-        window.Notification = KWhatsAppNotification;
+        window.Notification = KWazzupNotification;
 
         // ── Unread badge via title observation ────────────────────────────
         var lastCount = 0;

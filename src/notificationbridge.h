@@ -10,7 +10,7 @@ class KNotification;
  * NotificationBridge
  *
  * Exposed to WhatsApp Web's JavaScript context via QWebChannel under the key
- * "kwhatsappBridge".  The injected JS overrides window.Notification so that
+ * "kwazzupBridge".  The injected JS overrides window.Notification so that
  * every WhatsApp notification is forwarded here and shown as a native
  * KNotification instead of a Chromium popup.
  */

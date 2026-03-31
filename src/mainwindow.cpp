@@ -40,7 +40,7 @@
 #include <QUrl>
 #include <QDebug>
 
-static constexpr char kWhatsAppUrl[] = "https://web.whatsapp.com";
+static constexpr char kWazzupUrl[] = "https://web.whatsapp.com";
 static constexpr char kCfgGroup[]    = "MainWindow";
 
 // ─────────────────────────────────────────────────────────────────────────────
