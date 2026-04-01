@@ -37,7 +37,8 @@ jobs:
             kf6-kxmlgui-devel \
             kf6-ktextwidgets-devel \
             kf6-kwallet-devel \
-            libqt6-qtwebengine-devel
+            qt6-webenginewidgets-devel \
+            qt6-webenginecore-devel
 
       - name: Checkout
         uses: actions/checkout@v4
