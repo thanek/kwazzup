@@ -8,17 +8,15 @@ class QSpinBox;
 class QLineEdit;
 class QLabel;
 class QPushButton;
-class LockWidget;
 class QWebEngineProfile;
 
 /**
  * SettingsDialog
  *
- * Multi-page settings dialog (KPageDialog) with four pages:
+ * Multi-page settings dialog (KPageDialog) with three pages:
  *   General       – startup, close-to-tray, spell check language, zoom
  *   Notifications – enable, DND, sound
  *   Privacy       – OTR, clear cache, UA override
- *   Security      – app lock password, auto-lock timeout
  */
 class SettingsDialog : public KPageDialog
 {
@@ -27,18 +25,17 @@ class SettingsDialog : public KPageDialog
 public:
     // Returns the dialog (new or existing).  Returns nullptr only if an existing
     // dialog was raised instead of creating a new one.
-    static SettingsDialog *showDialog(QWebEngineProfile *profile, LockWidget *lockWidget, QWidget *parent = nullptr);
+    static SettingsDialog *showDialog(QWebEngineProfile *profile, QWidget *parent = nullptr);
 
 Q_SIGNALS:
     void settingsChanged();
 
 private:
-    explicit SettingsDialog(QWebEngineProfile *profile, LockWidget *lockWidget, QWidget *parent = nullptr);
+    explicit SettingsDialog(QWebEngineProfile *profile, QWidget *parent = nullptr);
 
     QWidget *makeGeneralPage();
     QWidget *makeNotificationsPage();
     QWidget *makePrivacyPage();
-    QWidget *makeSecurityPage();
 
     void loadSettings();
     void saveSettings();
@@ -58,11 +55,5 @@ private:
     QLineEdit  *m_uaEdit          = nullptr;
     QLabel     *m_cacheSizeLabel  = nullptr;
 
-    QCheckBox  *m_lockEnabled     = nullptr;
-    QLineEdit  *m_passEdit        = nullptr;
-    QLineEdit  *m_passConfirm     = nullptr;
-    QSpinBox   *m_autoLockSpin    = nullptr;
-
-    LockWidget         *m_lockWidget = nullptr;
-    QWebEngineProfile  *m_profile    = nullptr;
+    QWebEngineProfile  *m_profile = nullptr;
 };

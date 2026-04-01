@@ -66,11 +66,6 @@ int main(int argc, char *argv[])
         i18n("Bring the main window to the front"));
     parser.addOption(showOpt);
 
-    QCommandLineOption lockOpt(
-        QStringLiteral("lock"),
-        i18n("Lock the application immediately"));
-    parser.addOption(lockOpt);
-
     QCommandLineOption openChatOpt(
         QStringList{QStringLiteral("open-chat"), QStringLiteral("c")},
         i18n("Open a chat with the given phone number (international format)"),
@@ -112,8 +107,6 @@ int main(int argc, char *argv[])
     QTimer::singleShot(0, qApp, [&window, &parser]() {
         window = new MainWindow;
 
-        if (parser.isSet(QStringLiteral("lock")))
-            window->lockApp();
         if (parser.isSet(QStringLiteral("open-chat")))
             window->openNewChat(parser.value(QStringLiteral("open-chat")));
         if (parser.isSet(QStringLiteral("show")))

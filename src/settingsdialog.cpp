@@ -1,5 +1,4 @@
 #include "settingsdialog.h"
-#include "lockwidget.h"
 #include "utils.h"
 
 #include <KLocalizedString>
@@ -27,7 +26,7 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-SettingsDialog *SettingsDialog::showDialog(QWebEngineProfile *profile, LockWidget *lockWidget, QWidget *parent)
+SettingsDialog *SettingsDialog::showDialog(QWebEngineProfile *profile, QWidget *parent)
 {
     // Ensure only one instance is open at a time
     for (auto *w : QApplication::topLevelWidgets()) {
@@ -37,14 +36,13 @@ SettingsDialog *SettingsDialog::showDialog(QWebEngineProfile *profile, LockWidge
             return nullptr;
         }
     }
-    auto *dlg = new SettingsDialog(profile, lockWidget, parent);
+    auto *dlg = new SettingsDialog(profile, parent);
     dlg->show();
     return dlg;
 }
 
-SettingsDialog::SettingsDialog(QWebEngineProfile *profile, LockWidget *lockWidget, QWidget *parent)
+SettingsDialog::SettingsDialog(QWebEngineProfile *profile, QWidget *parent)
     : KPageDialog(parent)
-    , m_lockWidget(lockWidget)
     , m_profile(profile)
 {
     setWindowTitle(i18n("KWazzup Settings"));
@@ -60,7 +58,6 @@ SettingsDialog::SettingsDialog(QWebEngineProfile *profile, LockWidget *lockWidge
     addIconPage(makeGeneralPage(),       i18n("General"),       QStringLiteral("configure"));
     addIconPage(makeNotificationsPage(), i18n("Notifications"), QStringLiteral("notifications"));
     addIconPage(makePrivacyPage(),       i18n("Privacy"),       QStringLiteral("security-low"));
-    addIconPage(makeSecurityPage(),      i18n("Security"),      QStringLiteral("lock"));
 
     loadSettings();
 
@@ -171,37 +168,6 @@ QWidget *SettingsDialog::makePrivacyPage()
     return w;
 }
 
-// ── Security ─────────────────────────────────────────────────────────────────
-
-QWidget *SettingsDialog::makeSecurityPage()
-{
-    auto *w   = new QWidget;
-    auto *lay = new QFormLayout(w);
-    lay->setContentsMargins(12, 12, 12, 12);
-    lay->setSpacing(10);
-
-    m_lockEnabled = new QCheckBox(i18n("Enable application lock"), w);
-    lay->addRow(i18n("Lock:"), m_lockEnabled);
-
-    m_passEdit = new QLineEdit(w);
-    m_passEdit->setEchoMode(QLineEdit::Password);
-    m_passEdit->setPlaceholderText(i18n("New password"));
-    lay->addRow(i18n("Password:"), m_passEdit);
-
-    m_passConfirm = new QLineEdit(w);
-    m_passConfirm->setEchoMode(QLineEdit::Password);
-    m_passConfirm->setPlaceholderText(i18n("Confirm password"));
-    lay->addRow(i18n("Confirm:"), m_passConfirm);
-
-    m_autoLockSpin = new QSpinBox(w);
-    m_autoLockSpin->setRange(0, 120);
-    m_autoLockSpin->setSpecialValueText(i18n("Disabled"));
-    m_autoLockSpin->setSuffix(i18n(" min"));
-    lay->addRow(i18n("Auto-lock after:"), m_autoLockSpin);
-
-    return w;
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 
 void SettingsDialog::loadSettings()
@@ -224,9 +190,6 @@ void SettingsDialog::loadSettings()
     KConfigGroup priv(KSharedConfig::openConfig(), QStringLiteral("Privacy"));
     m_privateBrowsing->setChecked(priv.readEntry(QStringLiteral("PrivateBrowsing"), false));
 
-    KConfigGroup lock(KSharedConfig::openConfig(), QStringLiteral("Lock"));
-    m_lockEnabled->setChecked(lock.readEntry(QStringLiteral("AppLockEnabled"),   false));
-    m_autoLockSpin->setValue(lock.readEntry(QStringLiteral("AutoLockMinutes"),   0));
 }
 
 void SettingsDialog::saveSettings()
@@ -247,23 +210,7 @@ void SettingsDialog::saveSettings()
     KConfigGroup priv(KSharedConfig::openConfig(), QStringLiteral("Privacy"));
     priv.writeEntry(QStringLiteral("PrivateBrowsing"), m_privateBrowsing->isChecked());
 
-    KConfigGroup lockGrp(KSharedConfig::openConfig(), QStringLiteral("Lock"));
-    lockGrp.writeEntry(QStringLiteral("AppLockEnabled"),  m_lockEnabled->isChecked());
-    lockGrp.writeEntry(QStringLiteral("AutoLockMinutes"), m_autoLockSpin->value());
     KSharedConfig::openConfig()->sync();
-
-    // Password change
-    if (m_lockWidget && !m_passEdit->text().isEmpty()) {
-        if (m_passEdit->text() != m_passConfirm->text()) {
-            KMessageBox::error(this,
-                i18n("Passwords do not match. The lock password was not changed."),
-                i18n("KWazzup"));
-        } else {
-            m_lockWidget->setPassword(m_passEdit->text());
-            m_passEdit->clear();
-            m_passConfirm->clear();
-        }
-    }
 
     // Spell check language — apply immediately to the profile
     {

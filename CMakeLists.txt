@@ -60,7 +60,6 @@ set(KWAZZUP_SOURCES
     src/notificationbridge.cpp
     src/traymanager.cpp
     src/settingsdialog.cpp
-    src/lockwidget.cpp
     src/utils.cpp
     resources.qrc
 )

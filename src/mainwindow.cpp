@@ -2,7 +2,6 @@
 #include "webenginepage.h"
 #include "notificationbridge.h"
 #include "traymanager.h"
-#include "lockwidget.h"
 #include "settingsdialog.h"
 #include "utils.h"
 
@@ -26,11 +25,7 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QFileDialog>
-#include <QProgressBar>
-#include <QLabel>
-#include <QStatusBar>
 #include <QMenuBar>
-#include <QToolBar>
 #include <QVBoxLayout>
 #include <QTimer>
 #include <QStandardPaths>
@@ -53,12 +48,6 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowIcon(QIcon::fromTheme(QStringLiteral("kwazzup")));
     setMinimumSize(800, 600);
 
-    // ── Lock widget (fullscreen overlay, parent = this) ──────────────────────
-    m_lockWidget = new LockWidget(this);
-    connect(m_lockWidget, &LockWidget::unlocked, this, [this]() {
-        resetAutoLockTimer();
-    });
-
     // ── Web engine ───────────────────────────────────────────────────────────
     setupWebEngine();
 
@@ -70,8 +59,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     // ── Actions / menus / shortcuts ──────────────────────────────────────────
     setupActions();
-    setupStatusBar();
-    setupGUI(Default, QStringLiteral("kwazzupui.rc"));
+    setupGUI(Keys | Save | Create, QStringLiteral("kwazzupui.rc"));
+
+    // KXmlGuiWindow auto-adds "Find Command…" (KCommandBar); remove it — it
+    // serves no purpose in a single-page web-app.
+    if (auto *act = actionCollection()->action(QStringLiteral("open_kcommand_bar")))
+        actionCollection()->removeAction(act);
 
     // ── Palette / theme changes ───────────────────────────────────────────────
     // palette changes handled in changeEvent()
@@ -79,13 +72,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     // ── Load settings ────────────────────────────────────────────────────────
     loadSettings();
-    setupAutoLock();
 
     // ── Navigate to WhatsApp Web ──────────────────────────────────────────────
     m_webView->load(QUrl(QStringLiteral("https://web.whatsapp.com")));
 
-    // Install event filter to reset auto-lock on user activity
-    qApp->installEventFilter(this);
 }
 
 MainWindow::~MainWindow()
@@ -120,11 +110,8 @@ void MainWindow::setupWebEngine()
     setCentralWidget(m_webView);
 
     // Wire WebEngine signals
-    connect(m_webView, &QWebEngineView::titleChanged,   this, &MainWindow::onTitleChanged);
-    connect(m_webView, &QWebEngineView::loadStarted,    this, &MainWindow::onLoadStarted);
-    connect(m_webView, &QWebEngineView::loadProgress,   this, &MainWindow::onLoadProgress);
-    connect(m_webView, &QWebEngineView::loadFinished,   this, &MainWindow::onLoadFinished);
-    connect(m_webView, &QWebEngineView::iconChanged,    this, &MainWindow::onIconChanged);
+    connect(m_webView, &QWebEngineView::titleChanged, this, &MainWindow::onTitleChanged);
+    connect(m_webView, &QWebEngineView::iconChanged,  this, &MainWindow::onIconChanged);
 
     // Downloads
     connect(m_page, &WebEnginePage::downloadRequested,
@@ -178,11 +165,6 @@ void MainWindow::setupActions()
     newChatAct->setIcon(QIcon::fromTheme(QStringLiteral("document-new")));
     ac->setDefaultShortcut(newChatAct, QKeySequence(Qt::CTRL | Qt::Key_N));
 
-    auto *lockAct = ac->addAction(QStringLiteral("app_lock"), this, &MainWindow::slotLockApp);
-    lockAct->setText(i18n("&Lock Application"));
-    lockAct->setIcon(QIcon::fromTheme(QStringLiteral("lock")));
-    ac->setDefaultShortcut(lockAct, QKeySequence(Qt::CTRL | Qt::Key_L));
-
     auto *dndAct = ac->addAction(QStringLiteral("toggle_dnd"), this, &MainWindow::slotToggleDoNotDisturb);
     dndAct->setText(i18n("&Do Not Disturb"));
     dndAct->setIcon(QIcon::fromTheme(QStringLiteral("notification-inactive")));
@@ -205,41 +187,6 @@ void MainWindow::setupActions()
     });
 }
 
-void MainWindow::setupStatusBar()
-{
-    m_progressBar = new QProgressBar(statusBar());
-    m_progressBar->setMaximumWidth(200);
-    m_progressBar->setMaximumHeight(16);
-    m_progressBar->setVisible(false);
-    statusBar()->addPermanentWidget(m_progressBar);
-
-    m_zoomLabel = new QLabel(QStringLiteral("100%"), statusBar());
-    statusBar()->addPermanentWidget(m_zoomLabel);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Auto-lock
-// ─────────────────────────────────────────────────────────────────────────────
-
-void MainWindow::setupAutoLock()
-{
-    m_autoLockTimer.setSingleShot(true);
-    connect(&m_autoLockTimer, &QTimer::timeout, this, &MainWindow::onAutoLockTimeout);
-    resetAutoLockTimer();
-}
-
-void MainWindow::resetAutoLockTimer()
-{
-    m_autoLockTimer.stop();
-    if (m_autoLockMinutes > 0 && m_lockWidget->hasPassword())
-        m_autoLockTimer.start(m_autoLockMinutes * 60 * 1000);
-}
-
-void MainWindow::onAutoLockTimeout()
-{
-    slotLockApp();
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Settings persistence
 // ─────────────────────────────────────────────────────────────────────────────
@@ -248,10 +195,6 @@ void MainWindow::loadSettings()
 {
     KConfigGroup grp(KSharedConfig::openConfig(), QLatin1String(kCfgGroup));
     m_closeToTray     = grp.readEntry(QStringLiteral("CloseToTray"), true);
-
-    // AutoLockMinutes is written by SettingsDialog into the "Lock" group
-    KConfigGroup lockGrp(KSharedConfig::openConfig(), QStringLiteral("Lock"));
-    m_autoLockMinutes = lockGrp.readEntry(QStringLiteral("AutoLockMinutes"), 0);
 
     KConfigGroup notifGrp(KSharedConfig::openConfig(), QStringLiteral("Notifications"));
     m_doNotDisturb = notifGrp.readEntry(QStringLiteral("DoNotDisturb"), false);
@@ -264,7 +207,6 @@ void MainWindow::loadSettings()
     const int zoom = grp.readEntry(QStringLiteral("ZoomFactor"), 100);
     m_zoomFactor   = zoom / 100.0;
     m_webView->setZoomFactor(m_zoomFactor);
-    m_zoomLabel->setText(QStringLiteral("%1%").arg(zoom));
 
     const QString ua = grp.readEntry(QStringLiteral("UserAgent"), QString());
     if (!ua.isEmpty())
@@ -316,26 +258,6 @@ void MainWindow::onTitleChanged(const QString &title)
     setWindowTitle(clean.isEmpty() ? i18n("KWazzup") : clean);
 }
 
-void MainWindow::onLoadStarted()
-{
-    m_progressBar->setValue(0);
-    m_progressBar->setVisible(true);
-    statusBar()->showMessage(i18n("Loading…"));
-}
-
-void MainWindow::onLoadProgress(int progress)
-{
-    m_progressBar->setValue(progress);
-}
-
-void MainWindow::onLoadFinished(bool ok)
-{
-    m_progressBar->setVisible(false);
-    statusBar()->clearMessage();
-    if (!ok)
-        statusBar()->showMessage(i18n("Page load failed."), 5000);
-}
-
 void MainWindow::onIconChanged(const QIcon &icon)
 {
     if (!icon.isNull())
@@ -365,21 +287,6 @@ void MainWindow::onDownloadRequested(QWebEngineDownloadRequest *download)
     download->setDownloadDirectory(QFileInfo(path).absolutePath());
     download->setDownloadFileName(QFileInfo(path).fileName());
     download->accept();
-
-    // Show a simple status-bar notification while downloading
-    connect(download, &QWebEngineDownloadRequest::isFinishedChanged, this,
-            [this, download, path]() {
-                if (download->isFinished()) {
-                    if (download->state() == QWebEngineDownloadRequest::DownloadCompleted) {
-                        statusBar()->showMessage(
-                            i18n("Download complete: %1", QFileInfo(path).fileName()), 6000);
-                    } else {
-                        statusBar()->showMessage(i18n("Download failed."), 6000);
-                    }
-                }
-            });
-
-    statusBar()->showMessage(i18n("Downloading %1…", suggestedName));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -395,21 +302,18 @@ void MainWindow::slotZoomIn()
 {
     m_zoomFactor = qMin(m_zoomFactor + 0.1, 2.0);
     m_webView->setZoomFactor(m_zoomFactor);
-    m_zoomLabel->setText(QStringLiteral("%1%").arg(qRound(m_zoomFactor * 100)));
 }
 
 void MainWindow::slotZoomOut()
 {
     m_zoomFactor = qMax(m_zoomFactor - 0.1, 0.5);
     m_webView->setZoomFactor(m_zoomFactor);
-    m_zoomLabel->setText(QStringLiteral("%1%").arg(qRound(m_zoomFactor * 100)));
 }
 
 void MainWindow::slotZoomReset()
 {
     m_zoomFactor = 1.0;
     m_webView->setZoomFactor(m_zoomFactor);
-    m_zoomLabel->setText(QStringLiteral("100%"));
 }
 
 void MainWindow::slotNewChat()
@@ -433,25 +337,16 @@ void MainWindow::slotToggleDoNotDisturb()
         act->setChecked(m_doNotDisturb);
 }
 
-void MainWindow::slotLockApp()
-{
-    lockApp();
-}
-
 void MainWindow::slotClearCache()
 {
     m_page->profile()->clearAllVisitedLinks();
     m_page->profile()->clearHttpCache();
-    statusBar()->showMessage(i18n("Cache cleared."), 3000);
 }
 
 void MainWindow::slotShowSettings()
 {
-    if (auto *dlg = SettingsDialog::showDialog(m_page->profile(), m_lockWidget, this)) {
+    if (auto *dlg = SettingsDialog::showDialog(m_page->profile(), this))
         connect(dlg, &SettingsDialog::settingsChanged, this, &MainWindow::loadSettings);
-        // Re-arm auto-lock when settings change (timeout may have changed)
-        connect(dlg, &SettingsDialog::settingsChanged, this, &MainWindow::setupAutoLock);
-    }
 }
 
 void MainWindow::slotAbout()
@@ -494,13 +389,6 @@ void MainWindow::openNewChat(const QString &phoneNumber)
     m_page->runJavaScript(js);
 }
 
-void MainWindow::lockApp()
-{
-    if (!m_lockWidget->hasPassword()) return;
-    m_lockWidget->resize(size());
-    m_lockWidget->lock();
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Event handling
 // ─────────────────────────────────────────────────────────────────────────────
@@ -523,18 +411,3 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
-bool MainWindow::eventFilter(QObject *obj, QEvent *event)
-{
-    Q_UNUSED(obj)
-    // Reset auto-lock timer on any user interaction
-    switch (event->type()) {
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::KeyPress:
-        resetAutoLockTimer();
-        break;
-    default:
-        break;
-    }
-    return false;
-}
