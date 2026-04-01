@@ -7,6 +7,7 @@
 
 #include <KSharedConfig>
 #include <KConfigGroup>
+#include <KWindowSystem>
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -52,7 +53,8 @@ int main(int argc, char *argv[])
     KCrash::setFlags(KCrash::AutoRestart);
 
     // ── Single-instance enforcement via D-Bus ────────────────────────────────
-    // If a second instance is launched it will activate the first one
+    // Registered early so any concurrent second instance exits before
+    // allocating heavy resources (WebEngine profile).
     KDBusService service(KDBusService::Unique);
 
     // ── Command-line options ─────────────────────────────────────────────────
@@ -78,32 +80,49 @@ int main(int argc, char *argv[])
     parser.process(app);
     aboutData.processCommandLine(&parser);
 
-    // ── Main window ──────────────────────────────────────────────────────────
-    auto *window = new MainWindow;
+    // ── D-Bus activation handler ─────────────────────────────────────────────
+    // window may still be null when the first activateRequested fires:
+    // D-Bus delivers the Activate() call as soon as the event loop starts,
+    // which is before the deferred MainWindow construction completes.
+    // In that case we only set the XDG token; the window will be shown
+    // normally by the QTimer below.  For subsequent activations (dock click
+    // while already running) window is non-null and bringToFront() is called.
+    MainWindow *window = nullptr;
 
-    // Handle second-instance activation: KDBusService will call activate()
     QObject::connect(&service, &KDBusService::activateRequested,
-                     window, [window](const QStringList &, const QString &) {
-                         window->bringToFront();
+                     qApp, [&window](const QStringList &, const QString &startupId) {
+                         // Honour the XDG activation token so Wayland grants
+                         // focus.  Must be set before activateWindow().
+                         if (!startupId.isEmpty())
+                             KWindowSystem::setCurrentXdgActivationToken(startupId);
+                         if (window)
+                             window->bringToFront();
                      });
 
-    // Apply CLI options after the event loop starts
-    QTimer::singleShot(0, window, [&parser, window]() {
-        if (parser.isSet(QStringLiteral("lock"))) {
-            window->lockApp();
-        }
-        if (parser.isSet(QStringLiteral("open-chat"))) {
-            window->openNewChat(parser.value(QStringLiteral("open-chat")));
-        }
-        if (parser.isSet(QStringLiteral("show"))) {
-            window->bringToFront();
-        }
-    });
+    // ── Main window (deferred) ───────────────────────────────────────────────
+    // MainWindow initialises QtWebEngine, which blocks the main thread for
+    // several seconds.  Deferring to the first event-loop tick lets
+    // KDBusService reply to any pending D-Bus Activate() call immediately
+    // on startup, preventing the "Did not receive a reply" timeout that
+    // the Plasma launcher reports when DBusActivatable=true is set.
+    //
+    // Note: socket notifiers (D-Bus) have higher priority than zero-timers
+    // in Qt's event loop, so the Activate() reply is dispatched before the
+    // window is created.
+    QTimer::singleShot(0, qApp, [&window, &parser]() {
+        window = new MainWindow;
 
-    // Start minimised to tray if configured
-    KConfigGroup grp(KSharedConfig::openConfig(), QStringLiteral("MainWindow"));
-    if (!grp.readEntry(QStringLiteral("StartMinimized"), false))
-        window->show();
+        if (parser.isSet(QStringLiteral("lock")))
+            window->lockApp();
+        if (parser.isSet(QStringLiteral("open-chat")))
+            window->openNewChat(parser.value(QStringLiteral("open-chat")));
+        if (parser.isSet(QStringLiteral("show")))
+            window->bringToFront();
+
+        KConfigGroup grp(KSharedConfig::openConfig(), QStringLiteral("MainWindow"));
+        if (!grp.readEntry(QStringLiteral("StartMinimized"), false))
+            window->show();
+    });
 
     return app.exec();
 }

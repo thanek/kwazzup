@@ -124,7 +124,4 @@ install(FILES icons/kwazzup.svg
 install(FILES data/kwazzup.kcfg
     DESTINATION ${KDE_INSTALL_KCFGDIR})
 
-install(FILES data/org.kde.kwazzup.service
-    DESTINATION ${KDE_INSTALL_DBUSSERVICEDIR})
-
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

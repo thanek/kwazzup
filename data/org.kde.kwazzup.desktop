@@ -15,6 +15,3 @@ StartupNotify=true
 StartupWMClass=kwazzup
 MimeType=x-scheme-handler/whatsapp;
 
-# D-Bus single-instance activation
-DBusActivatable=true
-X-DBus-ServiceName=org.kde.kwazzup

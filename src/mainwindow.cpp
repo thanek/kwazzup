@@ -130,12 +130,8 @@ void MainWindow::setupWebEngine()
     connect(m_page, &WebEnginePage::downloadRequested,
             this, &MainWindow::onDownloadRequested);
 
-    // Notification bridge → tray badge & window activation
-    NotificationBridge *bridge = m_page->notificationBridge();
-    connect(bridge, &NotificationBridge::unreadCountChanged,
-            m_tray, &TrayManager::setUnreadCount);
-    connect(bridge, &NotificationBridge::activationRequested,
-            this,   &MainWindow::bringToFront);
+    // Note: bridge → tray connections are set up in the constructor
+    // after TrayManager is created (m_tray is still null at this point).
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
