@@ -10,7 +10,6 @@ An unofficial WhatsApp Web client for KDE Plasma, built with Qt 6 and KDE Framew
 - Plasma system tray icon with unread message badge (KStatusNotifierItem)
 - Global keyboard shortcut to show/hide the window (default: **Meta+W**)
 - Automatic light/dark theme following the system colour scheme
-- Application lock with configurable auto-lock timeout (password stored in KWallet when available)
 - Spell checking powered by KDE Sonnet
 - Single-instance enforcement via D-Bus (KDBusService) — clicking the launcher icon brings the existing window to front
 - Persistent login session across restarts
