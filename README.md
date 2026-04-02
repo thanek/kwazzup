@@ -2,6 +2,12 @@
 
 An unofficial WhatsApp Web client for KDE Plasma, built with Qt 6 and KDE Frameworks 6.
 
+[![Latest Release](https://img.shields.io/github/v/release/thanek/kwazzup)](https://github.com/thanek/kwazzup/releases/latest)
+
+**Download:** [.deb](https://github.com/thanek/kwazzup/releases/latest) · [.rpm](https://github.com/thanek/kwazzup/releases/latest) · [.tar.gz](https://github.com/thanek/kwazzup/releases/latest)
+
+![KWazzup screenshot](data/kwazzup_screenshot.png)
+
 > **Disclaimer:** KWazzup is not affiliated with, endorsed by, or connected to WhatsApp LLC or Meta Platforms, Inc. WhatsApp is a trademark of WhatsApp LLC. This project simply wraps the publicly available WhatsApp Web interface.
 
 ## Features
@@ -29,8 +35,6 @@ An unofficial WhatsApp Web client for KDE Plasma, built with Qt 6 and KDE Framew
 | ECM (Extra CMake Modules) | 6.0+ |
 
 Required KF6 components: `CoreAddons`, `Crash`, `DBusAddons`, `I18n`, `WidgetsAddons`, `IconThemes`, `Notifications`, `ConfigWidgets`, `Config`, `GlobalAccel`, `StatusNotifierItem`, `WindowSystem`, `XmlGui`, `TextWidgets`
-
-Optional: `KF6Wallet` (for secure password storage)
 
 ## Building
 
@@ -89,4 +93,4 @@ KWazzup is free software licensed under the **GNU General Public License v3.0 or
 
 ## AI notice
 
-This project was developed with the assistance of AI (Claude by Anthropic).
+This project was developed with the assistance of AI.
