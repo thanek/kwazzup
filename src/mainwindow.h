@@ -58,7 +58,6 @@ private Q_SLOTS:
     void slotToggleDoNotDisturb();
     void slotClearCache();
     void slotShowSettings();
-    void slotAbout();
     void slotCloseWindow();
 
 private:

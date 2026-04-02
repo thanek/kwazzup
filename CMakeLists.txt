@@ -124,3 +124,34 @@ install(FILES data/kwazzup.kcfg
     DESTINATION ${KDE_INSTALL_KCFGDIR})
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
+
+# ── Packaging (CPack) ─────────────────────────────────────────────────────────
+set(CPACK_PACKAGE_NAME "kwazzup")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Unofficial WhatsApp Web client for KDE Plasma")
+set(CPACK_PACKAGE_CONTACT "https://github.com/xis/kwazzup")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+
+# Source tarball
+set(CPACK_SOURCE_GENERATOR "TGZ")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${PROJECT_VERSION}")
+set(CPACK_SOURCE_IGNORE_FILES
+    "/\\.git/"
+    "/build/"
+    "\\.user$"
+)
+
+# Binary packages
+set(CPACK_GENERATOR "TGZ;DEB;RPM")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${PROJECT_VERSION}-${CMAKE_SYSTEM_PROCESSOR}")
+
+# DEB
+set(CPACK_DEBIAN_PACKAGE_SECTION "net")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS
+    "libqt6webenginewidgets6, libkf6notifications6, libkf6xmlgui6")
+
+# RPM
+set(CPACK_RPM_PACKAGE_GROUP "Applications/Internet")
+set(CPACK_RPM_PACKAGE_LICENSE "GPLv3+")
+
+include(CPack)

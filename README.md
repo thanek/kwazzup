@@ -38,11 +38,19 @@ Optional: `KF6Wallet` (for secure password storage)
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
+or
+```bash
+make
+```
 
 ### Installing
 
 ```bash
 sudo cmake --install build
+```
+or
+```bash
+make install
 ```
 
 Or install to a custom prefix:

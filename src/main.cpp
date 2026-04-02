@@ -11,6 +11,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QDate>
 #include <QIcon>
 #include <QTimer>
 
@@ -33,7 +34,7 @@ int main(int argc, char *argv[])
         QStringLiteral(KWAZZUP_VERSION),                // version
         i18n("An unofficial WhatsApp client for KDE Plasma"), // short description
         KAboutLicense::GPL_V3,
-        i18n("© 2024 KWazzup contributors"),
+        i18n("© %1 KWazzup contributors", QDate::currentDate().year()),
         QString(),                                      // other text
         QStringLiteral("https://github.com/thanek/kwazzup"),
         QStringLiteral("https://github.com/thanek/kwazzup/issues")

@@ -349,11 +349,6 @@ void MainWindow::slotShowSettings()
         connect(dlg, &SettingsDialog::settingsChanged, this, &MainWindow::loadSettings);
 }
 
-void MainWindow::slotAbout()
-{
-    KAboutData::applicationData().setupCommandLine(nullptr);
-}
-
 void MainWindow::slotCloseWindow()
 {
     // "Close window" (Ctrl+W, KStandardAction::close) hides to tray when
